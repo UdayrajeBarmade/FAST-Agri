@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shop - FAST</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+    .shop-hero {
+        position: relative;
+        height: 500px;
+        overflow: hidden;
+    }
+    
+    .shop-hero-img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: -1;
+        transform: scale(1.1);
+        transition: transform 10s ease;
+    }
+    
+    .shop-hero:hover .shop-hero-img {
+        transform: scale(1);
+    }
+    
+    .shop-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5));
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        text-align: center;
+        padding: 0 20px;
+    }
+    
+    .shop-overlay h1 {
+        font-size: 3rem;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        animation: fadeIn 1.2s ease;
+    }
+    
+    .shop-overlay p {
+        font-size: 1.3rem;
+        max-width: 800px;
+        margin-bottom: 30px;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        animation: fadeIn 1.5s ease;
+    }
+    
+    .shop-search {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: var(--border-radius);
+        padding: 30px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        margin-top: -70px;
+        position: relative;
+        z-index: 10;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+        transform: translateY(0);
+        transition: transform 0.5s ease, box-shadow 0.5s ease;
+    }
+    
+    .shop-search:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+    }
+    
+    .search-form {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+    
+    .search-input {
+        flex: 1;
+        min-width: 200px;
+    }
+    
+    .search-input input, .search-input select, .search-input button {
+        width: 100%;
+        padding: 15px;
+        border-radius: var(--border-radius);
+        border: 1px solid #ddd;
+        font-size: 1rem;
+        transition: var(--transition);
+    }
+    
+    .search-input input:focus, .search-input select:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(0, 168, 107, 0.2);
+    }
+    
+    .search-input select {
+        background-color: white;
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml;utf8,<svg fill='%2300A86B' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+    }
+    
+    .search-input button {
+        background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        border: none;
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .search-input button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: 0.5s;
+    }
+    
+    .search-input button:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 168, 107, 0.3);
+    }
+    
+    .search-input button:hover::before {
+        left: 100%;
+    }
+    
+    .shop-categories {
+        padding: 80px 0 40px;
+        background-color: white;
+        position: relative;
+    }
+    
+    .shop-categories::before {
+        content: '';
+        position: absolute;
+        top: -100px;
+        right: -100px;
+        width: 300px;
+        height: 300px;
+        background-color: rgba(0, 168, 107, 0.05);
+        border-radius: 50%;
+        z-index: 0;
+    }
+    
+    .categories-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .category-card {
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        overflow: hidden;
+        transition: var(--transition);
+        position: relative;
+        height: 200px;
+    }
+    
+    .category-card:hover {
+        transform: translateY(-15px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+    
+    .category-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: var(--transition);
+    }
+    
+    .category-card:hover img {
+        transform: scale(1.1);
+    }
+    
+    .category-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+        display: flex;
+        align-items: flex-end;
+        padding: 20px;
+        transition: var(--transition);
+    }
+    
+    .category-card:hover .category-overlay {
+        background: linear-gradient(to top, rgba(0, 168, 107, 0.8), transparent);
+    }
+    
+    .category-name {
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin: 0;
+        transition: var(--transition);
+    }
+    
+    .category-card:hover .category-name {
+        transform: translateY(-10px);
+    }
+    
+    .featured-products {
+        padding: 40px 0 80px;
+        background-color: white;
+        position: relative;
+    }
+    
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 30px;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .product-card {
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        overflow: hidden;
+        transition: var(--transition);
+        position: relative;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-15px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+    
+    .product-image {
+        height: 250px;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: var(--transition);
+    }
+    
+    .product-card:hover .product-image img {
+        transform: scale(1.1);
+    }
+    
+    .product-badge {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 5px 15px;
+        border-radius: 30px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        z-index: 1;
+    }
+    
+    .product-wishlist {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background-color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 1;
+        transition: var(--transition);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .product-wishlist:hover {
+        background-color: var(--accent-color);
+        transform: scale(1.1);
+    }
+    
+    .product-wishlist:hover i {
+        color: white;
+    }
+    
+    .product-wishlist i {
+        color: #FF5252;
+        font-size: 1.2rem;
+        transition: var(--transition);
+    }
+    
+    .product-content {
+        padding: 20px;
+    }
+    
+    .product-category {
+        color: var(--primary-color);
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+        display: block;
+    }
+    
+    .product-title {
+        font-size: 1.3rem;
+        margin: 0 0 10px;
+        color: var(--dark-color);
+        transition: var(--transition);
+    }
+    
+    .product-card:hover .product-title {
+        color: var(--primary-color);
+    }
+    
+    .product-rating {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    
+    .product-rating i {
+        color: #FFC107;
+        font-size: 0.9rem;
+        margin-right: 2px;
+    }
+    
+    .rating-count {
+        color: #777;
+        font-size: 0.9rem;
+        margin-left: 10px;
+    }
+    
+    .product-price {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    
+    .current-price {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--dark-color);
+    }
+    
+    .old-price {
+        font-size: 1.1rem;
+        color: #999;
+        text-decoration: line-through;
+        margin-left: 10px;
+    }
+    
+    .discount {
+        background-color: #FF5252;
+        color: white;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        margin-left: 10px;
+    }
+    
+    .product-actions {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .add-to-cart {
+        flex: 1;
+        background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        border: none;
+        padding: 12px;
+        border-radius: var(--border-radius);
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .add-to-cart::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: 0.5s;
+    }
+    
+    .add-to-cart:hover {
+        background: linear-gradient(45deg, var(--dark-color), var(--primary-color));
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 168, 107, 0.3);
+    }
+    
+    .add-to-cart:hover::before {
+        left: 100%;
+    }
+    
+    .quick-view {
+        width: 50px;
+        background-color: #f5f5f5;
+        border: none;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .quick-view:hover {
+        background-color: var(--dark-color);
+        color: white;
+    }
+    
+    .deals-section {
+        padding: 80px 0;
+        background-color: var(--light-color);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .deals-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="%2300A86B" opacity="0.1"/></svg>');
+        z-index: 0;
+    }
+    
+    .deal-card {
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        transition: var(--transition);
+        position: relative;
+        z-index: 1;
+    }
+    
+    .deal-card:hover {
+        transform: translateY(-15px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+    
+    .deal-image {
+        height: 250px;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .deal-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: var(--transition);
+    }
+    
+    .deal-card:hover .deal-image img {
+        transform: scale(1.1);
+    }
+    
+    .deal-timer {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 15px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .timer-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .timer-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+    
+    .timer-label {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+    }
+    
+    .deal-content {
+        padding: 20px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .deal-title {
+        font-size: 1.3rem;
+        margin: 0 0 15px;
+        color: var(--dark-color);
+        transition: var(--transition);
+    }
+    
+    .deal-card:hover .deal-title {
+        color: var(--primary-color);
+    }
+    
+    .deal-description {
+        color: #777;
+        margin-bottom: 20px;
+        flex: 1;
+    }
+    
+    .deal-price {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    
+    .deal-current-price {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--dark-color);
+    }
+    
+    .deal-old-price {
+        font-size: 1.2rem;
+        color: #999;
+        text-decoration: line-through;
+        margin-left: 15px;
+    }
+    
+    .deal-discount {
+        background-color: #FF5252;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 1rem;
+        font-weight: 600;
+        margin-left: 15px;
+    }
+    
+    .deal-button {
+        background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        border: none;
+        padding: 15px;
+        border-radius: var(--border-radius);
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .deal-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: 0.5s;
+    }
+    
+    .deal-button:hover {
+        background: linear-gradient(45deg, var(--dark-color), var(--primary-color));
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 168, 107, 0.3);
+    }
+    
+    .deal-button:hover::before {
+        left: 100%;
+    }
+    
+    @media (max-width: 768px) {
+        .shop-overlay h1 {
+            font-size: 2rem;
+        }
+        
+        .shop-overlay p {
+            font-size: 1rem;
+        }
+        
+        .search-form {
+            flex-direction: column;
+        }
+        
+        .deal-timer {
+            padding: 10px;
+            gap: 10px;
+        }
+        
+        .timer-value {
+            font-size: 1.2rem;
+        }
+        
+        .timer-label {
+            font-size: 0.7rem;
+        }
+        
+        .deal-current-price {
+            font-size: 1.5rem;
+        }
+        
+        .deal-old-price {
+            font-size: 1rem;
+        }
+        
+        .deal-discount {
+            font-size: 0.9rem;
+            padding: 3px 8px;
+        }
+    }
+</style>
+</head>
+<body>
+<header>
+    <div class="container">
+        <div class="logo-container">
+            <img src="fast-logo.jpg" alt="FAST Logo" class="logo">
+            <div class="logo-text">
+                <h1>FAST</h1>
+                <p>Fast Agriculture System Technology</p>
+            </div>
+        </div>
+        <nav>
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="weather.html">Weather</a></li>
+                <li><a href="market.html">Weekly Market</a></li>
+                <li><a href="shop.html" class="active">Shop</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="community.html">Community</a></li>
+                <li><a href="login.html" class="login-btn">Login</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<div class="shop-hero">
+    <img src="placeholder.svg?height=500&width=1200" alt="Shop Background" class="shop-hero-img">
+    <div class="shop-overlay">
+        <h1>Agricultural Products Shop</h1>
+        <p>Quality farming equipment, seeds, fertilizers, and more for modern agriculture.</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="shop-search">
+        <form class="search-form">
+            <div class="search-input">
+                <input type="text" placeholder="Search products...">
+            </div>
+            <div class="search-input">
+                <select>
+                    <option value="">All Categories</option>
+                    <option value="equipment">Farm Equipment</option>
+                    <option value="seeds">Seeds & Plants</option>
+                    <option value="fertilizers">Fertilizers</option>
+                    <option value="pesticides">Pesticides</option>
+                    <option value="irrigation">Irrigation Systems</option>
+                </select>
+            </div>
+            <div class="search-input">
+                <button type="button"><i class="fas fa-search"></i> Search</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<section class="shop-categories">
+    <div class="container">
+        <h2>Shop by Category</h2>
+        <div class="categories-grid">
+            <a href="#" class="category-card reveal fade-bottom">
+                <img src="farm-equipment.jpg" alt="Farm Equipment">
+                <div class="category-overlay">
+                    <h3 class="category-name">Farm Equipment</h3>
+                </div>
+            </a>
+            <a href="#" class="category-card reveal fade-bottom">
+                <img src="Seed_raising.jpg" alt="Seeds & Plants">
+                <div class="category-overlay">
+                    <h3 class="category-name">Seeds & Plants</h3>
+                </div>
+            </a>
+            <a href="#" class="category-card reveal fade-bottom">
+                <img src="fertilizers.jpg" alt="Fertilizers">
+                <div class="category-overlay">
+                    <h3 class="category-name">Fertilizers</h3>
+                </div>
+            </a>
+            <a href="#" class="category-card reveal fade-bottom">
+                <img src="pesticides.jpg" alt="Pesticides">
+                <div class="category-overlay">
+                    <h3 class="category-name">Pesticides</h3>
+                </div>
+            </a>
+            <a href="#" class="category-card reveal fade-bottom">
+                <img src="irrigationsystem.jpg" alt="Irrigation Systems">
+                <div class="category-overlay">
+                    <h3 class="category-name">Irrigation Systems</h3>
+                </div>
+            </a>
+            <a href="#" class="category-card reveal fade-bottom">
+                <img src="toolsandaccessories.jpg" alt="Tools & Accessories">
+                <div class="category-overlay">
+                    <h3 class="category-name">Tools & Accessories</h3>
+                </div>
+            </a>
+        </div>
+    </div>
+</section>
+
+<section class="featured-products">
+    <div class="container">
+        <h2>Featured Products</h2>
+        <div class="products-grid">
+            <div class="product-card reveal fade-bottom">
+                <div class="product-image">
+                    <img src="tractor.jpg" alt="Tractor">
+                    <span class="product-badge">New</span>
+                    <div class="product-wishlist">
+                        <i class="far fa-heart"></i>
+                    </div>
+                </div>
+                <div class="product-content">
+                    <span class="product-category">Farm Equipment</span>
+                    <h3 class="product-title">Mini Tractor 25HP</h3>
+                    <div class="product-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                        <span class="rating-count">(24 Reviews)</span>
+                    </div>
+                    <div class="product-price">
+                        <span class="current-price">₹350,000</span>
+                        <span class="old-price">₹380,000</span>
+                        <span class="discount">-8%</span>
+                    </div>
+                    <div class="product-actions">
+                        <button class="add-to-cart"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
+                        <button class="quick-view"><i class="fas fa-eye"></i></button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="product-card reveal fade-bottom">
+                <div class="product-image">
+                    <img src="dripirrigationkit.jpeg" alt="Drip Irrigation Kit">
+                    <div class="product-wishlist">
+                        <i class="far fa-heart"></i>
+                    </div>
+                </div>
+                <div class="product-content">
+                    <span class="product-category">Irrigation Systems</span>
+                    <h3 class="product-title">Advanced Drip Irrigation Kit</h3>
+                    <div class="product-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="far fa-star"></i>
+                        <span class="rating-count">(18 Reviews)</span>
+                    </div>
+                    <div class="product-price">
+                        <span class="current-price">₹12,500</span>
+                    </div>
+                    <div class="product-actions">
+                        <button class="add-to-cart"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
+                        <button class="quick-view"><i class="fas fa-eye"></i></button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="product-card reveal fade-bottom">
+                <div class="product-image">
+                    <img src="fertilizers.jpg" alt="Organic Fertilizer">
+                    <span class="product-badge">Organic</span>
+                    <div class="product-wishlist">
+                        <i class="far fa-heart"></i>
+                    </div>
+                </div>
+                <div class="product-content">
+                    <span class="product-category">Fertilizers</span>
+                    <h3 class="product-title">Premium Organic Fertilizer</h3>
+                    <div class="product-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <span class="rating-count">(32 Reviews)</span>
+                    </div>
+                    <div class="product-price">
+                        <span class="current-price">₹1,200</span>
+                        <span class="old-price">₹1,500</span>
+                        <span class="discount">-20%</span>
+                    </div>
+                    <div class="product-actions">
+                        <button class="add-to-cart"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
+                        <button class="quick-view"><i class="fas fa-eye"></i></button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="product-card reveal fade-bottom">
+                <div class="product-image">
+                    <img src="hybridtomatoseedsjpg" alt="Hybrid Tomato Seeds">
+                    <div class="product-wishlist">
+                        <i class="far fa-heart"></i>
+                    </div>
+                </div>
+                <div class="product-content">
+                    <span class="product-category">Seeds & Plants</span>
+                    <h3 class="product-title">Hybrid Tomato Seeds (Pack of 100)</h3>
+                    <div class="product-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="far fa-star"></i>
+                        <span class="rating-count">(15 Reviews)</span>
+                    </div>
+                    <div class="product-price">
+                        <span class="current-price">₹450</span>
+                    </div>
+                    <div class="product-actions">
+                        <button class="add-to-cart"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
+                        <button class="quick-view"><i class="fas fa-eye"></i></button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="product-card reveal fade-bottom">
+                <div class="product-image">
+                    <img src="soil-testing-kits.jpeg" alt="Soil Testing Kit">
+                    <span class="product-badge">Best Seller</span>
+                    <div class="product-wishlist">
+                        <i class="far fa-heart"></i>
+                    </div>
+                </div>
+                <div class="product-content">
+                    <span class="product-category">Tools & Accessories</span>
+                    <h3 class="product-title">Digital Soil Testing Kit</h3>
+                    <div class="product-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                        <span class="rating-count">(42 Reviews)</span>
+                    </div>
+                    <div class="product-price">
+                        <span class="current-price">₹3,500</span>
+                        <span class="old-price">₹4,200</span>
+                        <span class="discount">-17%</span>
+                    </div>
+                    <div class="product-actions">
+                        <button class="add-to-cart"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
+                        <button class="quick-view"><i class="fas fa-eye"></i></button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="product-card reveal fade-bottom">
+                <div class="product-image">
+                    <img src="sprayer.jpg" alt="Sprayer">
+                    <div class="product-wishlist">
+                        <i class="far fa-heart"></i>
+                    </div>
+                </div>
+                <div class="product-content">
+                    <span class="product-category">Farm Equipment</span>
+                    <h3 class="product-title">Battery Operated Sprayer 16L</h3>
+                    <div class="product-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="far fa-star"></i>
+                        <span class="rating-count">(28 Reviews)</span>
+                    </div>
+                    <div class="product-price">
+                        <span class="current-price">₹4,800</span>
+                        <span class="old-price">₹5,500</span>
+                        <span class="discount">-13%</span>
+                    </div>
+                    <div class="product-actions">
+                        <button class="add-to-cart"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
+                        <button class="quick-view"><i class="fas fa-eye"></i></button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="product-card reveal fade-bottom">
+                <div class="product-image">
+                    <img src="greenhouse.jpg" alt="Greenhouse Kit">
+                    <span class="product-badge">New</span>
+                    <div class="product-wishlist">
+                        <i class="far fa-heart"></i>
+                    </div>
+                </div>
+                <div class="product-content">
+                    <span class="product-category">Tools & Accessories</span>
+                    <h3 class="product-title">Mini Greenhouse Kit (10x12 ft)</h3>
+                    <div class="product-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="far fa-star"></i>
+                        <span class="rating-count">(12 Reviews)</span>
+                    </div>
+                    <div class="product-price">
+                        <span class="current-price">₹18,500</span>
+                    </div>
+                    <div class="product-actions">
+                        <button class="add-to-cart"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
+                        <button class="quick-view"><i class="fas fa-eye"></i></button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="product-card reveal fade-bottom">
+                <div class="product-image">
+                    <img src="placeholder.svg?height=250&width=300" alt="Pesticide">
+                    <div class="product-wishlist">
+                        <i class="far fa-heart"></i>
+                    </div>
+                </div>
+                <div class="product-content">
+                    <span class="product-category">Pesticides</span>
+                    <h3 class="product-title">Organic Neem-Based Pesticide</h3>
+                    <div class="product-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                        <span class="rating-count">(22 Reviews)</span>
+                    </div>
+                    <div class="product-price">
+                        <span class="current-price">₹850</span>
+                        <span class="old-price">₹950</span>
+                        <span class="discount">-11%</span>
+                    </div>
+                    <div class="product-actions">
+                        <button class="add-to-cart"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
+                        <button class="quick-view"><i class="fas fa-eye"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="deals-section">
+    <div class="container">
+        <h2>Special Deals</h2>
+        <div class="products-grid">
+            <div class="deal-card reveal fade-bottom">
+                <div class="deal-image">
+                    <img src="placeholder.svg?height=250&width=300" alt="Rotavator">
+                    <div class="deal-timer">
+                        <div class="timer-item">
+                            <span class="timer-value" id="days">02</span>
+                            <span class="timer-label">Days</span>
+                        </div>
+                        <div class="timer-item">
+                            <span class="timer-value" id="hours">18</span>
+                            <span class="timer-label">Hours</span>
+                        </div>
+                        <div class="timer-item">
+                            <span class="timer-value" id="minutes">45</span>
+                            <span class="timer-label">Mins</span>
+                        </div>
+                        <div class="timer-item">
+                            <span class="timer-value" id="seconds">30</span>
+                            <span class="timer-label">Secs</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="deal-content">
+                    <h3 class="deal-title">Heavy Duty Rotavator</h3>
+                    <p class="deal-description">Professional-grade rotavator for efficient soil preparation. Compatible with all standard tractors.</p>
+                    <div class="deal-price">
+                        <span class="deal-current-price">₹65,000</span>
+                        <span class="deal-old-price">₹85,000</span>
+                        <span class="deal-discount">-24%</span>
+                    </div>
+                    <button class="deal-button"><i class="fas fa-bolt"></i> Grab the Deal</button>
+                </div>
+            </div>
+            
+            <div class="deal-card reveal fade-bottom">
+                <div class="deal-image">
+                    <img src="placeholder.svg?height=250&width=300" alt="Solar Water Pump">
+                    <div class="deal-timer">
+                        <div class="timer-item">
+                            <span class="timer-value">01</span>
+                            <span class="timer-label">Days</span>
+                        </div>
+                        <div class="timer-item">
+                            <span class="timer-value">12</span>
+                            <span class="timer-label">Hours</span>
+                        </div>
+                        <div class="timer-item">
+                            <span class="timer-value">33</span>
+                            <span class="timer-label">Mins</span>
+                        </div>
+                        <div class="timer-item">
+                            <span class="timer-value">15</span>
+                            <span class="timer-label">Secs</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="deal-content">
+                    <h3 class="deal-title">Solar Water Pump System</h3>
+                    <p class="deal-description">Complete solar-powered water pump system with 2HP capacity. Includes solar panels, controller, and pump.</p>
+                    <div class="deal-price">
+                        <span class="deal-current-price">₹45,000</span>
+                        <span class="deal-old-price">₹58,000</span>
+                        <span class="deal-discount">-22%</span>
+                    </div>
+                    <button class="deal-button"><i class="fas fa-bolt"></i> Grab the Deal</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-section">
+                <h3>FAST</h3>
+                <p>Fast Agriculture System Technology</p>
+                <p>"Smart Farming for a Smarter Future"</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="weather.html">Weather</a></li>
+                    <li><a href="market.html">Weekly Market</a></li>
+                    <li><a href="shop.html">Shop</a></li>
+                    <li><a href="blog.html">Blog</a></li>
+                    <li><a href="community.html">Community</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p><i class="fas fa-envelope"></i> info@fastfarming.org</p>
+                <p><i class="fas fa-phone"></i> +91 1234567890</p>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2023 FAST - All Rights Reserved</p>
+        </div>
+    </div>
+</footer>
+
+<script src="script.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Deal timer countdown
+        function updateTimer() {
+            const now = new Date();
+            const endDate = new Date(now);
+            endDate.setDate(endDate.getDate() + 3); // 3 days from now
+            
+            const diff = endDate - now;
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            document.getElementById('days').textContent = days.toString().padStart(2, '0');
+            document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+            document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+            document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+        }
+        
+        // Update timer every second
+        setInterval(updateTimer, 1000);
+        updateTimer(); // Initial call
+        
+        // Add to cart animation
+        const addToCartButtons = document.querySelectorAll('.add-to-cart');
+        
+        addToCartButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Store original text
+                const originalText = this.innerHTML;
+                
+                // Change button text and disable
+                this.innerHTML = '<i class="fas fa-check"></i> Added to Cart';
+                this.disabled = true;
+                this.style.background = 'linear-gradient(45deg, #4CAF50, #8BC34A)';
+                
+                // Create floating cart icon animation
+                const icon = document.createElement('div');
+                icon.innerHTML = '<i class="fas fa-shopping-cart"></i>';
+                icon.style.position = 'absolute';
+                icon.style.top = '0';
+                icon.style.left = '50%';
+                icon.style.transform = 'translateX(-50%)';
+                icon.style.color = 'white';
+                icon.style.fontSize = '1.5rem';
+                icon.style.zIndex = '10';
+                icon.style.pointerEvents = 'none';
+                
+                // Add animation
+                icon.style.animation = 'floatToCart 1s ease forwards';
+                
+                // Add keyframes for animation
+                const style = document.createElement('style');
+                style.innerHTML = `
+                    @keyframes floatToCart {
+                        0% {
+                            top: 0;
+                            opacity: 1;
+                        }

@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weekly Market - FAST</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+    .market-hero {
+        position: relative;
+        height: 500px;
+        overflow: hidden;
+    }
+    
+    .market-hero-img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: -1;
+        transform: scale(1.1);
+        transition: transform 10s ease;
+    }
+    
+    .market-hero:hover .market-hero-img {
+        transform: scale(1);
+    }
+    
+    .market-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5));
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        text-align: center;
+        padding: 0 20px;
+    }
+    
+    .market-overlay h1 {
+        font-size: 3rem;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        animation: fadeIn 1.2s ease;
+    }
+    
+    .market-overlay p {
+        font-size: 1.3rem;
+        max-width: 800px;
+        margin-bottom: 30px;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        animation: fadeIn 1.5s ease;
+    }
+    
+    .market-filter {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: var(--border-radius);
+        padding: 30px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        margin-top: -70px;
+        position: relative;
+        z-index: 10;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+        transform: translateY(0);
+        transition: transform 0.5s ease, box-shadow 0.5s ease;
+    }
+    
+    .market-filter:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+    }
+    
+    .filter-form {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+    
+    .filter-input {
+        flex: 1;
+        min-width: 200px;
+    }
+    
+    .filter-input select, .filter-input button {
+        width: 100%;
+        padding: 15px;
+        border-radius: var(--border-radius);
+        border: 1px solid #ddd;
+        font-size: 1rem;
+        transition: var(--transition);
+    }
+    
+    .filter-input select {
+        background-color: white;
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml;utf8,<svg fill='%2300A86B' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+    }
+    
+    .filter-input select:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(0, 168, 107, 0.2);
+    }
+    
+    .filter-input button {
+        background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        border: none;
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .filter-input button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: 0.5s;
+    }
+    
+    .filter-input button:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 168, 107, 0.3);
+    }
+    
+    .filter-input button:hover::before {
+        left: 100%;
+    }
+    
+    .market-section {
+        padding: 80px 0;
+        background-color: white;
+        position: relative;
+    }
+    
+    .market-section::before {
+        content: '';
+        position: absolute;
+        top: -100px;
+        right: -100px;
+        width: 300px;
+        height: 300px;
+        background-color: rgba(0, 168, 107, 0.05);
+        border-radius: 50%;
+        z-index: 0;
+    }
+    
+    .market-tabs {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 40px;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .market-tab {
+        padding: 15px 30px;
+        background-color: white;
+        border: 2px solid #eee;
+        cursor: pointer;
+        font-weight: 600;
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .market-tab:first-child {
+        border-radius: var(--border-radius) 0 0 var(--border-radius);
+    }
+    
+    .market-tab:last-child {
+        border-radius: 0 var(--border-radius) var(--border-radius) 0;
+    }
+    
+    .market-tab.active {
+        background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        border-color: transparent;
+    }
+    
+    .market-tab::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: 0.5s;
+    }
+    
+    .market-tab:hover::before {
+        left: 100%;
+    }
+    
+    .market-table-container {
+        overflow-x: auto;
+        position: relative;
+        z-index: 1;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+    }
+    
+    .market-table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: white;
+    }
+    
+    .market-table th, .market-table td {
+        padding: 20px;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .market-table th {
+        background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 0.9rem;
+    }
+    
+    .market-table th:first-child {
+        border-top-left-radius: var(--border-radius);
+    }
+    
+    .market-table th:last-child {
+        border-top-right-radius: var(--border-radius);
+    }
+    
+    .market-table tr:last-child td:first-child {
+        border-bottom-left-radius: var(--border-radius);
+    }
+    
+    .market-table tr:last-child td:last-child {
+        border-bottom-right-radius: var(--border-radius);
+    }
+    
+    .market-table tr {
+        transition: var(--transition);
+    }
+    
+    .market-table tr:hover {
+        background-color: rgba(0, 168, 107, 0.05);
+        transform: scale(1.01);
+    }
+    
+    .market-table td img {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 15px;
+        transition: var(--transition);
+    }
+    
+    .market-table tr:hover td img {
+        transform: scale(1.1) rotate(5deg);
+    }
+    
+    .product-name {
+        display: flex;
+        align-items: center;
+    }
+    
+    .product-info {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .product-info .name {
+        font-weight: 600;
+        color: var(--dark-color);
+        margin-bottom: 5px;
+    }
+    
+    .product-info .variety {
+        font-size: 0.9rem;
+        color: #777;
+    }
+    
+    .price {
+        font-weight: 600;
+        color: var(--dark-color);
+    }
+    
+    .price-change {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-weight: 500;
+    }
+    
+    .price-up {
+        color: #4CAF50;
+    }
+    
+    .price-down {
+        color: #F44336;
+    }
+    
+    .price-stable {
+        color: #FF9800;
+    }
+    
+    .availability {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .availability-indicator {
+        width: 80px;
+        height: 8px;
+        background-color: #eee;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    
+    .availability-bar {
+        height: 100%;
+        border-radius: 4px;
+    }
+    
+    .high {
+        background-color: #4CAF50;
+        width: 90%;
+    }
+    
+    .medium {
+        background-color: #FF9800;
+        width: 60%;
+    }
+    
+    .low {
+        background-color: #F44336;
+        width: 30%;
+    }
+    
+    .market-trends {
+        padding: 80px 0;
+        background-color: var(--light-color);
+        position: relative;
+    }
+    
+    .market-trends::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="%2300A86B" opacity="0.1"/></svg>');
+        z-index: 0;
+    }
+    
+    .trends-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .trend-card {
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        padding: 30px;
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .trend-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 0 50px 50px 0;
+        border-color: transparent var(--primary-color) transparent transparent;
+        transition: var(--transition);
+        opacity: 0.1;
+    }
+    
+    .trend-card:hover {
+        transform: translateY(-15px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+    
+    .trend-card:hover::before {
+        border-width: 0 100px 100px 0;
+    }
+    
+    .trend-card h3 {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+        color: var(--dark-color);
+        position: relative;
+        padding-bottom: 15px;
+    }
+    
+    .trend-card h3::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 50px;
+        height: 3px;
+        background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+        transition: var(--transition);
+    }
+    
+    .trend-card:hover h3::after {
+        width: 80px;
+    }
+    
+    .trend-card p {
+        margin-bottom: 20px;
+        line-height: 1.7;
+    }
+    
+    .trend-card .read-more {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--primary-color);
+        font-weight: 600;
+        transition: var(--transition);
+    }
+    
+    .trend-card .read-more i {
+        transition: var(--transition);
+    }
+    
+    .trend-card .read-more:hover {
+        color: var(--accent-color);
+    }
+    
+    .trend-card .read-more:hover i {
+        transform: translateX(5px);
+    }
+    
+    @media (max-width: 768px) {
+        .market-overlay h1 {
+            font-size: 2rem;
+        }
+        
+        .market-overlay p {
+            font-size: 1rem;
+        }
+        
+        .filter-form {
+            flex-direction: column;
+        }
+        
+        .market-tabs {
+            flex-wrap: wrap;
+        }
+        
+        .market-tab {
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+            padding: 12px 15px;
+        }
+        
+        .market-table th, .market-table td {
+            padding: 15px 10px;
+        }
+        
+        .product-name {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .market-table td img {
+            margin-bottom: 10px;
+            margin-right: 0;
+        }
+    }
+</style>
+</head>
+<body>
+<header>
+    <div class="container">
+        <div class="logo-container">
+            <img src="fast-logo.jpg" alt="FAST Logo" class="logo">
+            <div class="logo-text">
+                <h1>FAST</h1>
+                <p>Fast Agriculture System Technology</p>
+            </div>
+        </div>
+        <nav>
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="weather.html">Weather</a></li>
+                <li><a href="market.html" class="active">Weekly Market</a></li>
+                <li><a href="shop.html">Shop</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="community.html">Community</a></li>
+                <li><a href="login.html" class="login-btn">Login</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<div class="market-hero">
+    <img src="placeholder.svg?height=500&width=1200" alt="Market Background" class="market-hero-img">
+    <div class="market-overlay">
+        <h1>Weekly Agricultural Market</h1>
+        <p>Get real-time prices, trends, and availability of agricultural products from markets across the country.</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="market-filter">
+        <form class="filter-form">
+            <div class="filter-input">
+                <select id="state">
+                    <option value="">Select State</option>
+                    <option value="maharashtra">Maharashtra</option>
+                    <option value="punjab">Punjab</option>
+                    <option value="karnataka">Karnataka</option>
+                    <option value="gujarat">Gujarat</option>
+                    <option value="haryana">Haryana</option>
+                </select>
+            </div>
+            <div class="filter-input">
+                <select id="district">
+                    <option value="">Select District</option>
+                    <option value="pune">Pune</option>
+                    <option value="nashik">Nashik</option>
+                    <option value="nagpur">Nagpur</option>
+                    <option value="amravati">Amravati</option>
+                    <option value="solapur">Solapur</option>
+                </select>
+            </div>
+            <div class="filter-input">
+                <select id="market">
+                    <option value="">Select Market</option>
+                    <option value="apmc">APMC Market</option>
+                    <option value="wholesale">Wholesale Market</option>
+                    <option value="retail">Retail Market</option>
+                    <option value="organic">Organic Market</option>
+                </select>
+            </div>
+            <div class="filter-input">
+                <button type="button" id="filterBtn"><i class="fas fa-filter"></i> Apply Filter</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<section class="market-section">
+    <div class="container">
+        <h2>Current Market Prices</h2>
+        <div class="market-tabs">
+            <div class="market-tab active" data-tab="vegetables">Vegetables</div>
+            <div class="market-tab" data-tab="fruits">Fruits</div>
+            <div class="market-tab" data-tab="grains">Grains</div>
+            <div class="market-tab" data-tab="dairy">Dairy</div>
+        </div>
+        
+        <div class="market-table-container">
+            <table class="market-table" id="vegetables-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Price (₹/kg)</th>
+                        <th>Change</th>
+                        <th>Availability</th>
+                        <th>Quality</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="product-name">
+                            <img src="placeholder.svg?height=60&width=60" alt="Tomato">
+                            <div class="product-info">
+                                <span class="name">Tomato</span>
+                                <span class="variety">Local</span>
+                            </div>
+                        </td>
+                        <td class="price">₹35.00</td>
+                        <td class="price-change price-up"><i class="fas fa-arrow-up"></i> 12%</td>
+                        <td class="availability">
+                            <div class="availability-indicator">
+                                <div class="availability-bar high"></div>
+                            </div>
+                            <span>High</span>
+                        </td>
+                        <td><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i></td>
+                    </tr>
+                    <tr>
+                        <td class="product-name">
+                            <img src="placeholder.svg?height=60&width=60" alt="Potato">
+                            <div class="product-info">
+                                <span class="name">Potato</span>
+                                <span class="variety">Kufri Jyoti</span>
+                            </div>
+                        </td>
+                        <td class="price">₹25.00</td>
+                        <td class="price-change price-down"><i class="fas fa-arrow-down"></i> 5%</td>
+                        <td class="availability">
+                            <div class="availability-indicator">
+                                <div class="availability-bar high"></div>
+                            </div>
+                            <span>High</span>
+                        </td>
+                        <td><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></td>
+                    </tr>
+                    <tr>
+                        <td class="product-name">
+                            <img src="placeholder.svg?height=60&width=60" alt="Onion">
+                            <div class="product-info">
+                                <span class="name">Onion</span>
+                                <span class="variety">Red</span>
+                            </div>
+                        </td>
+                        <td class="price">₹40.00</td>
+                        <td class="price-change price-up"><i class="fas fa-arrow-up"></i> 20%</td>
+                        <td class="availability">
+                            <div class="availability-indicator">
+                                <div class="availability-bar medium"></div>
+                            </div>
+                            <span>Medium</span>
+                        </td>
+                        <td><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i></td>
+                    </tr>
+                    <tr>
+                        <td class="product-name">
+                            <img src="placeholder.svg?height=60&width=60" alt="Cauliflower">
+                            <div class="product-info">
+                                <span class="name">Cauliflower</span>
+                                <span class="variety">Local</span>
+                            </div>
+                        </td>
+                        <td class="price">₹30.00</td>
+                        <td class="price-change price-stable"><i class="fas fa-equals"></i> 0%</td>
+                        <td class="availability">
+                            <div class="availability-indicator">
+                                <div class="availability-bar high"></div>
+                            </div>
+                            <span>High</span>
+                        </td>
+                        <td><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i></td>
+                    </tr>
+                    <tr>
+                        <td class="product-name">
+                            <img src="placeholder.svg?height=60&width=60" alt="Cucumber">
+                            <div class="product-info">
+                                <span class="name">Cucumber</span>
+                                <span class="variety">English</span>
+                            </div>
+                        </td>
+                        <td class="price">₹20.00</td>
+                        <td class="price-change price-down"><i class="fas fa-arrow-down"></i> 8%</td>
+                        <td class="availability">
+                            <div class="availability-indicator">
+                                <div class="availability-bar medium"></div>
+                            </div>
+                            <span>Medium</span>
+                        </td>
+                        <td><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i></td>
+                    </tr>
+                    <tr>
+                        <td class="product-name">
+                            <img src="placeholder.svg?height=60&width=60" alt="Carrot">
+                            <div class="product-info">
+                                <span class="name">Carrot</span>
+                                <span class="variety">Nantes</span>
+                            </div>
+                        </td>
+                        <td class="price">₹45.00</td>
+                        <td class="price-change price-up"><i class="fas fa-arrow-up"></i> 15%</td>
+                        <td class="availability">
+                            <div class="availability-indicator">
+                                <div class="availability-bar low"></div>
+                            </div>
+                            <span>Low</span>
+                        </td>
+                        <td><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></td>
+                    </tr>
+                    <tr>
+                        <td class="product-name">
+                            <img src="placeholder.svg?height=60&width=60" alt="Spinach">
+                            <div class="product-info">
+                                <span class="name">Spinach</span>
+                                <span class="variety">Local</span>
+                            </div>
+                        </td>
+                        <td class="price">₹30.00</td>
+                        <td class="price-change price-stable"><i class="fas fa-equals"></i> 0%</td>
+                        <td class="availability">
+                            <div class="availability-indicator">
+                                <div class="availability-bar high"></div>
+                            </div>
+                            <span>High</span>
+                        </td>
+                        <td><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i></td>
+                    </tr>
+                    <tr>
+                        <td class="product-name">
+                            <img src="placeholder.svg?height=60&width=60" alt="Capsicum">
+                            <div class="product-info">
+                                <span class="name">Capsicum</span>
+                                <span class="variety">Green</span>
+                            </div>
+                        </td>
+                        <td class="price">₹60.00</td>
+                        <td class="price-change price-up"><i class="fas fa-arrow-up"></i> 10%</td>
+                        <td class="availability">
+                            <div class="availability-indicator">
+                                <div class="availability-bar medium"></div>
+                            </div>
+                            <span>Medium</span>
+                        </td>
+                        <td><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i></td>
+                    </tr>
+                    <tr>
+                        <td class="product-name">
+                            <img src="placeholder.svg?height=60&width=60" alt="Brinjal">
+                            <div class="product-info">
+                                <span class="name">Brinjal</span>
+                                <span class="variety">Purple Long</span>
+                            </div>
+                        </td>
+                        <td class="price">₹35.00</td>
+                        <td class="price-change price-down"><i class="fas fa-arrow-down"></i> 5%</td>
+                        <td class="availability">
+                            <div class="availability-indicator">
+                                <div class="availability-bar high"></div>
+                            </div>
+                            <span>High</span>
+                        </td>
+                        <td><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i></td>
+                    </tr>
+                    <tr>
+                        <td class="product-name">
+                            <img src="placeholder.svg?height=60&width=60" alt="Okra">
+                            <div class="product-info">
+                                <span class="name">Okra</span>
+                                <span class="variety">Local</span>
+                            </div>
+                        </td>
+                        <td class="price">₹50.00</td>
+                        <td class="price-change price-up"><i class="fas fa-arrow-up"></i> 8%</td>
+                        <td class="availability">
+                            <div class="availability-indicator">
+                                <div class="availability-bar medium"></div>
+                            </div>
+                            <span>Medium</span>
+                        </td>
+                        <td><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <!-- Other tables will be shown/hidden via JavaScript -->
+            <table class="market-table" id="fruits-table" style="display: none;">
+                <!-- Fruits data will be populated via JavaScript -->
+            </table>
+            
+            <table class="market-table" id="grains-table" style="display: none;">
+                <!-- Grains data will be populated via JavaScript -->
+            </table>
+            
+            <table class="market-table" id="dairy-table" style="display: none;">
+                <!-- Dairy data will be populated via JavaScript -->
+            </table>
+        </div>
+    </div>
+</section>
+
+<section class="market-trends">
+    <div class="container">
+        <h2>Market Trends & Insights</h2>
+        <div class="trends-grid">
+            <div class="trend-card reveal fade-bottom">
+                <h3>Tomato Prices Surge</h3>
+                <p>Tomato prices have increased by 12% this week due to unseasonal rains affecting the crop in major growing regions. Experts predict prices will stabilize in the coming weeks as new harvests reach the market.</p>
+                <a href="#" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="trend-card reveal fade-bottom">
+                <h3>Grain Market Outlook</h3>
+                <p>Wheat and rice prices remain stable despite global fluctuations. Government procurement at MSP has ensured farmers receive fair prices. Storage facilities report adequate stock for the coming months.</p>
+                <a href="#" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="trend-card reveal fade-bottom">
+                <h3>Organic Produce Demand</h3>
+                <p>Demand for organic vegetables and fruits has seen a 30% increase in urban markets. Farmers are increasingly adopting organic farming practices to meet this growing demand and benefit from premium pricing.</p>
+                <a href="#" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-section">
+                <h3>FAST</h3>
+                <p>Fast Agriculture System Technology</p>
+                <p>"Smart Farming for a Smarter Future"</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="weather.html">Weather</a></li>
+                    <li><a href="market.html">Weekly Market</a></li>
+                    <li><a href="shop.html">Shop</a></li>
+                    <li><a href="blog.html">Blog</a></li>
+                    <li><a href="community.html">Community</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p><i class="fas fa-envelope"></i> info@fastfarming.org</p>
+                <p><i class="fas fa-phone"></i> +91 1234567890</p>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2023 FAST - All Rights Reserved</p>
+        </div>
+    </div>
+</footer>
+
+<script src="script.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Market tabs functionality
+        const marketTabs = document.querySelectorAll('.market-tab');
+        const marketTables = document.querySelectorAll('.market-table');
+        
+        marketTabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Remove active class from all tabs
+                marketTabs.forEach(t => t.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                this.classList.add('active');
+                
+                // Hide all tables
+                marketTables.forEach(table => table.style.display = 'none');
+                
+                // Show the selected table
+                const tableId = this.getAttribute('data-tab') + '-table';
+                document.getElementById(tableId).style.display = 'table';
+                
+                // If the table is empty, populate it
+                populateTable(tableId);
+            });
+        });
+        
+        // Filter button functionality
+        const filterBtn = document.getElementById('filterBtn');
+        if (filterBtn) {
+            filterBtn.addEventListener('click', function() {
+                const state = document.getElementById('state').value;
+                const district = document.getElementById('district').value;
+                const market = document.getElementById('market').value;
+                
+                // Add loading animation to button
+                filterBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Filtering...';
+                filterBtn.disabled = true;
+                
+                // Simulate filtering data
+                setTimeout(function() {
+                    // Reset button
+                    filterBtn.innerHTML = '<i class="fas fa-filter"></i> Apply Filter';
+                    filterBtn.disabled = false;
+                    
+                    // Show notification
+                    showNotification(`Showing market data for ${state || 'All States'}, ${district || 'All Districts'}, ${market || 'All Markets'}`);
+                    
+                    // Refresh the current table
+                    const activeTab = document.querySelector('.market-tab.active');
+                    if (activeTab) {
+                        const tableId = activeTab.getAttribute('data-tab') + '-table';
+                        populateTable(tableId, true);
+                    }
+                }, 1500);
+            });
+        }
+        
+        // Function to populate tables with data
+        function populateTable(tableId, refresh = false) {
+            const table = document.getElementById(tableId);
+            
+            // If table is already populated and not refreshing, do nothing
+            if (table.querySelector('tbody tr') && !refresh) return;
+            
+            // Clear existing rows if refreshing
+            if (refresh) {
+                const tbody = table.querySelector('tbody');
+                if (tbody) tbody.innerHTML = '';
+            }
+            
+            // Sample data for different categories
+            const data = {
+                'fruits-table': [
+                    { name: 'Apple', variety: 'Royal Gala', price: '₹180.00', change: '+5%', changeType: 'up', availability: 'high', quality: 4 },
+                    { name: 'Banana', variety: 'Robusta', price: '₹60.00', change: '-3%', changeType: 'down', availability: 'high', quality: 5 },
+                    { name: 'Orange', variety: 'Nagpur', price: '₹90.00', change: '0%', changeType: 'stable', availability: 'medium', quality: 4 },
+                    { name: 'Mango', variety: 'Alphonso', price: '₹350.00', change: '+15%', changeType: 'up', availability: 'low', quality: 5 },
+                    { name: 'Grapes', variety: 'Thompson Seedless', price: '₹120.00', change: '-8%', changeType: 'down', availability: 'medium', quality: 4 },
+                    { name: 'Watermelon', variety: 'Sugar Baby', price: '₹40.00', change: '+2%', changeType: 'up', availability: 'high', quality: 3 },
+                    { name: 'Papaya', variety: 'Red Lady', price: '₹70.00', change: '0%', changeType: 'stable', availability: 'high', quality: 4 },
+                    { name: 'Pineapple', variety: 'Queen', price: '₹80.00', change: '+10%', changeType: 'up', availability: 'medium', quality: 4 },
+                    { name: 'Pomegranate', variety: 'Bhagwa', price: '₹200.00', change: '+5%', changeType: 'up', availability: 'medium', quality: 5 },
+                    { name: 'Guava', variety: 'Allahabad', price: '₹60.00', change: '-5%', changeType: 'down', availability: 'high', quality: 3 }
+                ],
+                'grains-table': [
+                    { name: 'Wheat', variety: 'Sharbati', price: '₹30.00', change: '+2%', changeType: 'up', availability: 'high', quality: 5 },
+                    { name: 'Rice', variety: 'Basmati', price: '₹120.00', change: '0%', changeType: 'stable', availability: 'high', quality: 5 },
+                    { name: 'Maize', variety: 'Yellow', price: '₹25.00', change: '-3%', changeType: 'down', availability: 'high', quality: 4 },
+                    { name: 'Barley', variety: 'Feed Grade', price: '₹28.00', change: '+5%', changeType: 'up', availability: 'medium', quality: 4 },
+                    { name: 'Jowar', variety: 'White', price: '₹35.00', change: '0%', changeType: 'stable', availability: 'medium', quality: 3 },
+                    { name: 'Bajra', variety: 'Hybrid', price: '₹32.00', change: '+8%', changeType: 'up', availability: 'medium', quality: 4 },
+                    { name: 'Ragi', variety: 'Local', price: '₹40.00', change: '+12%', changeType: 'up', availability: 'low', quality: 4 },
+                    { name: 'Oats', variety: 'Rolled', price: '₹85.00', change: '-2%', changeType: 'down', availability: 'medium', quality: 5 },
+                    { name: 'Quinoa', variety: 'White', price: '₹250.00', change: '+5%', changeType: 'up', availability: 'low', quality: 5 },
+                    { name: 'Millet', variety: 'Foxtail', price: '₹45.00', change: '0%', changeType: 'stable', availability: 'medium', quality: 4 }
+                ],
+                'dairy-table': [
+                    { name: 'Milk', variety: 'Full Cream', price: '₹60.00', change: '+5%', changeType: 'up', availability: 'high', quality: 5 },
+                    { name: 'Butter', variety: 'Unsalted', price: '₹450.00', change: '+8%', changeType: 'up', availability: 'high', quality: 5 },
+                    { name: 'Cheese', variety: 'Processed', price: '₹380.00', change: '0%', changeType: 'stable', availability: 'high', quality: 4 },
+                    { name: 'Curd', variety: 'Set', price: '₹70.00', change: '+3%', changeType: 'up', availability: 'high', quality: 4 },
+                    { name: 'Paneer', variety: 'Fresh', price: '₹320.00', change: '+10%', changeType: 'up', availability: 'medium', quality: 5 },
+                    { name: 'Ghee', variety: 'Desi', price: '₹650.00', change: '+15%', changeType: 'up', availability: 'high', quality: 5 },
+                    { name: 'Cream', variety: 'Heavy', price: '₹180.00', change: '-2%', changeType: 'down', availability: 'medium', quality: 4 },
+                    { name: 'Yogurt', variety: 'Greek', price: '₹120.00', change: '0%', changeType: 'stable', availability: 'medium', quality: 4 },
+                    { name: 'Buttermilk', variety: 'Spiced', price: '₹40.00', change: '-5%', changeType: 'down', availability: 'high', quality: 3 },
+                    { name: 'Lassi', variety: 'Sweet', price: '₹50.00', change: '0%', changeType: 'stable', availability: 'high', quality: 4 }
+                ]
+            };
+            
+            // If table doesn't have a tbody, create one
+            let tbody = table.querySelector('tbody');
+            if (!tbody) {
+                tbody = document.createElement('tbody');
+                table.appendChild(tbody);
+            }
+            
+            // If table doesn't have a thead, create one
+            let thead = table.querySelector('thead');
+            if (!thead) {
+                thead = document.createElement('thead');
+                const headerRow = document.createElement('tr');
+                headerRow.innerHTML = `
+                    <th>Product</th>
+                    <th>Price (₹/kg)</th>
+                    <th>Change</th>
+                    <th>Availability</th>
+                    <th>Quality</th>
+                `;
+                thead.appendChild(headerRow);
+                table.insertBefore(thead, tbody);
+            }
+            
+            // Get the data for this table
+            const tableData = data[tableId] || [];
+            
+            // Create rows for the table
+            tableData.forEach((item, index) => {
+                const row = document.createElement('tr');
+                
+                // Create stars based on quality
+                let stars = '';
+                for (let i = 1; i <= 5; i++) {
+                    stars += `<i class="fa${i <= item.quality ? 's' : 'r'} fa-star"></i>`;
+                }
+                
+                row.innerHTML = `
+                    <td class="product-name">
+                        <img src="placeholder.svg?height=60&width=60" alt="${item.name}">
+                        <div class="product-info">
+                            <span class="name">${item.name}</span>
+                            <span class="variety">${item.variety}</span>
+                        </div>
+                    </td>
+                    <td class="price">${item.price}</td>
+                    <td class="price-change price-${item.changeType}">
+                        <i class="fas fa-arrow-${item.changeType === 'up' ? 'up' : item.changeType === 'down' ? 'down' : 'equals'}"></i> ${item.change}
+                    </td>
+                    <td class="availability">
+                        <div class="availability-indicator">
+                            <div class="availability-bar ${item.availability}"></div>
+                        </div>
+                        <span>${item.availability.charAt(0).toUpperCase() + item.availability.slice(1)}</span>
+                    </td>
+                    <td>${stars}</td>
+                `;
+                
+                // Add animation delay
+                row.style.opacity = '0';
+                row.style.transform = 'translateY(20px)';
+                
+                tbody.appendChild(row);
+                
+                // Animate row appearance
+                setTimeout(() => {
+                    row.style.transition = 'all 0.5s ease';
+                    row.style.opacity = '1';
+                    row.style.transform = 'translateY(0)';
+                }, 100 * index);
+            });
+        }
+        
+        // Function to show notification
+        function showNotification(message) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.style.position = 'fixed';
+            notification.style.top = '20px';
+            notification.style.right = '20px';
+            notification.style.background = 'linear-gradient(45deg, var(--primary-color), var(--secondary-color))';
+            notification.style.color = 'white';
+            notification.style.padding = '15px 25px';
+            notification.style.borderRadius = '10px';
+            notification.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.2)';
+            notification.style.zIndex = '9999';
+            notification.style.transform = 'translateX(100%)';
+            notification.style.opacity = '0';
+            notification.style.transition = 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+            notification.innerHTML = `<i class="fas fa-info-circle"></i> ${message}`;
+            
+            document.body.appendChild(notification);
+            
+            // Show notification with animation
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+                notification.style.opacity = '1';
+            }, 100);
+            
+            // Hide notification after 5 seconds
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                notification.style.opacity = '0';
+                
+                // Remove notification from DOM after animation
+                setTimeout(() => {
+                    notification.remove();
+                }, 500);
+            }, 5000);
+        }
+        
+        // Initialize the first table
+        populateTable('vegetables-table');
+    });
+</script>
+</body>
+</html>
